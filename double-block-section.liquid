@@ -1,0 +1,72 @@
+{%- comment %}
+	For "Hero image" section
+{% endcomment -%}
+
+<div class="hero-image-outer">
+  <div class="hero-image">
+
+    <div class="image-slider">
+      {% for block in section.blocks %}
+        {% if block.type == 'block-1' %}
+          <div class="hero-image-inner" style="background-image: url({{ block.settings.hero_banner | img_url: '2048x2048'}});">
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+  <div class="weekly-offer">
+    {% for block in section.blocks %}
+      {% if block.type == 'block-2' %}
+        <img src="{{ block.settings.weekly_banner | img_url: '750x' }}">
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Double Hero Slider",
+  "blocks":
+  [
+    {
+      "type": "block-1",
+      "name": "3/4 Slider (Left)",
+      "settings": [
+        {
+          "id": "hero_banner",
+          "type": "image_picker",
+          "label": "3/4 Image"
+        },
+        {
+          "id": "hero_link",
+          "type": "url",
+          "label": "Hero Link"
+        }
+      ]
+    },
+    {
+      "type": "block-2",
+      "name": "1/4 Slider (Right)",
+      "settings": [
+        {
+          "id": "weekly_banner",
+          "type": "image_picker",
+          "label": "1/4 Image"
+        },
+        {
+          "id": "weekly_link",
+          "type": "url",
+          "label": "Weekly Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "category": "Advanced content",
+      "name": "Double Hero Slider"
+    }
+  ]
+}
+{% endschema %}
