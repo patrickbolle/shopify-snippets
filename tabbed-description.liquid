@@ -1,0 +1,143 @@
+{% comment %}
+	if combine_pretext is false, the text before the first <h6> will be shown above all tabs, otherwise added to the first tab
+{% endcomment %}
+{% assign combine_pretext = false %}
+
+{% assign description = tabbed-description | default: product.description %}
+{% if description contains "<h6>" %}
+	{% assign tab_heads = '' %}
+	{% assign tab_texts = '' %}
+	{% assign pretext = '' %}
+
+	{% assign chunks = description | strip | split: "<h6>" %}
+	{% for c in chunks %}
+		{% if c contains "</h6>" %}
+			{% assign chunk = c | split: "</h6>" %}
+			{% assign tab_heads = tab_heads | append: ",," | append: chunk.first %}
+			{% assign tab_texts = tab_texts | append: ",," %}
+			{% if pretext != blank  and combine_pretext %}
+				{% assign tab_texts = tab_texts | append: pretext | append: "<br>" %}
+				{% assign pretext = '' %}
+			{% endif %}
+			{% assign tab_texts = tab_texts | append: chunk.last  %}
+		{% elsif forloop.first %}
+			{% assign pretext =  c %}
+		{% endif %}
+	{% endfor %}
+
+	{% assign tab_heads = tab_heads | remove_first: ",," | split: ",," %}
+	{% assign tab_texts = tab_texts | remove_first: ",," | split: ",," %}
+
+	{% assign index =  1  %}
+	<div>
+      {% if pretext != blank and combine_pretext == false %}
+      <span class=pretext>{{ pretext }}</span>
+      {% endif %}
+	  <ul class="tabs">
+	  	{% for head in tab_heads %}
+	  		<li><a href="#tab-{{- index -}}">{{ head }}</a></li>
+		 	{% assign index =  index | plus: 1  %}
+	  	{% endfor %}
+	  </ul>
+	  {% assign index =  1  %}
+	  {% for text in tab_texts %}
+	  	<div id="tab-{{- index -}}">{{ text }}</div>
+	 	{% assign index =  index | plus: 1  %}
+	  {% endfor %}
+  	</div>
+	
+<script>
+  document.addEventListener( 'DOMContentLoaded', function () {
+    $('ul.tabs').each(function(){
+      var active, content, links = $(this).find('a');
+      active = links.first().addClass('active');
+      content = $(active.attr('href'));
+      links.not(':first').each(function () {
+        $($(this).attr('href')).hide();
+      });
+      $(this).find('a').click(function(e){
+        active.removeClass('active');
+        content.hide();
+        active = $(this);
+        content = $($(this).attr('href'));
+        active.addClass('active');
+        content.show();
+        return false;
+      });
+    });
+  }, false );
+</script>
+<style>
+  ul.tabs {
+  border-bottom: 1px solid #DDDDDD;
+  display: block;
+  margin: 0 0 20px;
+  padding: 0;
+}
+ul.tabs li {
+  display: block;
+  float: left;
+  height: 30px;
+  margin-bottom: 0;
+  padding: 0;
+  width: auto;
+}
+ul.tabs li a {
+  -moz-border-bottom-colors: none;
+  -moz-border-image: none;
+  -moz-border-left-colors: none;
+  -moz-border-right-colors: none;
+  -moz-border-top-colors: none;
+  background: none repeat scroll 0 0 #F5F5F5;
+  border-color: #DDDDDD !important;
+  border-style: solid;
+  border-width: 1px 1px 0 1px;
+  display: block;
+  font-size: 13px;
+  height: 29px;
+  line-height: 30px;
+  margin: 0;
+  padding: 0 20px;
+  text-decoration: none;
+  width: auto;
+  color: #303030;
+  border-bottom:none !important;
+}
+ul.tabs li a.active {
+  background: none repeat scroll 0 0 #FFFFFF;
+  border-left-width: 1px;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+  color: #111111;
+  height: 30px;
+  margin: 0 0 0 -1px;
+  padding-top: 4px;
+  position: relative;
+  top: -4px;
+}
+ul.tabs li:first-child a.active {
+  margin-left: 0;
+}
+ul.tabs li:first-child a {
+  border-top-left-radius: 2px;
+  border-width: 1px 1px 0;
+}
+ul.tabs li:last-child a {
+  border-top-right-radius: 2px;
+}
+ul.tabs:before, ul.tabs:after {
+  content: " ";
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  width: 0;
+}
+ul.tabs:after {
+  clear: both;
+}
+</style>
+
+{% else %}
+	{{ description }}
+{% endif %}
