@@ -1,0 +1,345 @@
+{% comment %}Should this be a setting?{% endcomment %}
+{% assign slide_timeout = 10 %}
+{% assign slide_timeout_ms = slide_timeout | times: 1000 %}
+
+<div class="carousel-container" id="carousel-{{section.id}}" data-ken-burns="{{section.settings.enable_ken_burns}}" data-slide-timeout="{{slide_timeout_ms}}">
+  <div class="carousel-slides {% if section.settings.color_overlay_opacity != '0' %}with-overlay{%endif%}">
+    {% if section.blocks.size > 0 %}
+      {% for slide in section.blocks limit: section.blocks.size %}
+        <div class="carousel-slide {% if slide.settings.slide_image == blank %}placeholder-image{% endif %}" data-index="{{ forloop.index }}" {{ slide.shopify_attributes }}>
+          {% if slide.settings.slide_image != blank %}
+            <div class="carousel-slide-image" style="background-image: url({{ slide.settings.slide_image | img_url: '1440x', scale: 2 }}); height:{{ section.settings.slide_height }} "></div>
+          {% else %}
+            <div class="carousel-slide-image placeholder">
+              {{ 'lifestyle-1' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+
+          {% assign buttonText = false %}
+          {% assign buttonUrl = false %}
+          {% assign button = false %}
+          {% assign heading = false %}
+          {% assign text = false %}
+          {% assign isDefault = false %}
+
+          {% if slide.settings.button_cta != blank %}
+            {% assign buttonText = slide.settings.button_cta | escape %}
+          {% endif %}
+
+          {% if slide.settings.button_link != blank %}
+            {% assign buttonUrl = slide.settings.button_link %}
+          {% endif %}
+
+          {% if buttonText and buttonUrl %}
+            {% assign button = true %}
+          {% endif %}
+
+          {% if slide.settings.heading_text != blank %}
+            {% assign heading = slide.settings.heading_text | escape %}
+          {% endif %}
+
+          {% if slide.settings.page_text != blank %}
+            {% assign text = slide.settings.page_text | escape %}
+          {% endif %}
+
+          {% if slide.settings.heading_text == "Welcome to your new store!" %}
+            {% assign isDefault = true %}
+          {% endif %}
+
+          {% if heading or text or button %}
+            <div class="carousel-slide-text {{ slide.settings.text_position }}">
+              <div class="carousel-slide-text-inner">
+                {% if slide.settings.button_cta == blank and slide.settings.button_link != blank %}
+                  <a href='{{slide.settings.button_link}}' tabindex='0'>
+                {% endif %}
+
+                {% if slide.settings.heading_text == blank and slide.settings.page_text == blank %}
+                  <h1 class="bigHeader placeholder-text"></h1>
+                {% else %}
+                  {% if slide.settings.page_text == blank %}
+                    <h1 class="bigHeader {% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{slide.settings.heading_text}}</h1>
+                  {% elsif slide.settings.heading_text == blank %}
+                    <p class="{% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{slide.settings.page_text}}</p>
+                  {% else %}
+                    {% if slide.settings.page_text == blank %}
+                      <h1 class="bigHeader {% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{slide.settings.heading_text | escape }}</h1>
+                    {% elsif slide.settings.heading_text == blank %}
+                      <p class="{% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{slide.settings.page_text | escape }}</p>
+                    {% else %}
+                      <h1 class="{% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{slide.settings.heading_text | escape }}</h1>
+                      <p class="{% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{slide.settings.page_text | escape }}</p>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+
+                {% if slide.settings.button_cta == blank and slide.settings.button_link != blank %}
+                  </a>
+                {% endif %}
+
+                {% if slide.settings.button_cta != blank %}
+                  {% if slide.settings.button_link != blank %}
+                    <a href="{{slide.settings.button_link}}" class='block button-container' tabindex='0'>
+                      <button class="btn btn--large {% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{ slide.settings.button_cta | escape }}</button>
+                    </a>
+                  {% elsif isDefault %}
+                    <a href="/admin/themes/{{theme.id}}/editor" class='block button-container' tabindex='0'>
+                      <button class="btn btn--large {% if section.settings.enable_dropshadow %}drop-shadow{%endif%}">{{ slide.settings.button_cta | escape }}</button>
+                    </a>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+          {% elsif slide.settings.button_link != blank %}
+            <a class="full-slide-link" href='{{slide.settings.button_link}}' tabindex='0'></a>
+          {% endif %}
+
+          {% if section.blocks.size > 1 and section.settings.enable_progress_bar %}
+            <div class="carousel-slide-progress">
+              <span class="carousel-slide-progress-bar"></span>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  @media screen and (max-width: 699px) {
+    #carousel-{{section.id}} .carousel-slides {
+      background-color: {{ settings.color_primary }};
+    }
+
+    #carousel-{{section.id}} .carousel-slide-text .btn {
+      background-color: {{section.settings.controls_color}};
+      color: {{ settings.color_primary }};
+    }
+  }
+
+  #carousel-{{section.id}} .carousel-slide-image:before {
+    background-color: {{section.settings.color_overlay_color}};
+    opacity: {{section.settings.color_overlay_opacity}};
+  }
+
+  #carousel-{{section.id}} .carousel-slide-text,
+  #carousel-{{section.id}} .carousel-slide-text h1,
+  #carousel-{{section.id}} .carousel-slide-text p {
+    color: {{section.settings.controls_color}};
+  }
+
+  #carousel-{{section.id}} .carousel-slide-progress-bar {
+    background-color: {{section.settings.progress_bar_color}};
+  }
+
+  #carousel-{{section.id}} .slick-active .carousel-slide-progress-bar {
+    -webkit-animation: progress-expand {{slide_timeout_ms}}ms linear;
+    -moz-animation: progress-expand {{slide_timeout_ms}}ms linear;
+    -o-animation: progress-expand {{slide_timeout_ms}}ms linear;
+    animation: progress-expand {{slide_timeout_ms}}ms linear;
+  }
+
+  #carousel-{{section.id}} .slick-dots button:before {
+    color: {{section.settings.controls_color}};
+  }
+</style>
+
+{% schema %}
+  {
+    "name": "Restaurant Slider",
+    "class": "carousel",
+    "max_blocks": 9,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_ken_burns",
+        "label": "Enable zoom animation",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_progress_bar",
+        "default": true,
+        "label": "Show progress bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_dropshadow",
+        "default": false,
+        "label": "Show dropshadow",
+        "info": "Adds a shadow effect to your slideshow text and buttons."
+      },
+      {
+        "type": "select",
+        "id": "slide_height",
+        "default": "40vw",
+        "label": "Slider Height (%)",
+        "options": [
+          {
+            "value": "10vw",
+            "label": "20%"
+          },
+          {
+            "value": "20vw",
+            "label": "20%"
+          },
+          {
+            "value": "30vw",
+            "label": "30%"
+          },
+          {
+            "value": "40vw",
+            "label": "40%"
+          },
+          {
+            "value": "50vw",
+            "label": "50%"
+          },
+          {
+            "value": "60vw",
+            "label": "60%"
+          },
+          {
+            "value": "70vw",
+            "label": "70%"
+          },
+          {
+            "value": "80vw",
+            "label": "80%"
+          },
+          {
+            "value": "90vw",
+            "label": "90%"
+          },
+          {
+            "value": "100vw",
+            "label": "100%"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "color_overlay_opacity",
+        "default": "0.8",
+        "label": "Overlay opacity",
+        "options": [
+          {
+            "value": "0",
+            "label": "Off"
+          },
+          {
+            "value": "0.1",
+            "label": "10%"
+          },
+          {
+            "value": "0.2",
+            "label": "20%"
+          },
+          {
+            "value": "0.3",
+            "label": "30%"
+          },
+          {
+            "value": "0.4",
+            "label": "40%"
+          },
+          {
+            "value": "0.5",
+            "label": "50%"
+          },
+          {
+            "value": "0.6",
+            "label": "60%"
+          },
+          {
+            "value": "0.7",
+            "label": "70%"
+          },
+          {
+            "value": "0.8",
+            "label": "80%"
+          },
+          {
+            "value": "0.9",
+            "label": "90%"
+          },
+          {
+            "value": "1",
+            "label": "100%"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "color_overlay_color",
+        "default": "#031207",
+        "label": "Overlay color"
+      },
+      {
+        "type": "color",
+        "id": "progress_bar_color",
+        "default": "#FFFFFF",
+        "label": "Progress bar color"
+      },
+      {
+        "type": "color",
+        "id": "controls_color",
+        "default": "#FFFFFF",
+        "label": "Text color"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "slide",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "slide_image",
+            "label": "Slide image",
+            "info": "Landscape orientation (3:2 w:h). 1440 x 960px minimum recommended"
+          },
+          {
+            "type": "select",
+            "id": "text_position",
+            "label": "Text alignment",
+            "options": [
+              {
+                "value": "align-center-bottom",
+                "label": "Bottom"
+              },
+              {
+                "value": "align-center-middle",
+                "label": "Middle"
+              },
+              {
+                "value": "align-center-top",
+                "label": "Top"
+              }
+            ],
+            "default": "align-center-middle"
+          },
+          {
+            "type": "text",
+            "id": "heading_text",
+            "label": "Heading text"
+          },
+          {
+            "type": "text",
+            "id": "page_text",
+            "label": "Subheading text"
+          },
+          {
+            "type": "text",
+            "id": "button_cta",
+            "label": "Button text"
+          },
+          {
+            "type": "url",
+            "id": "button_link",
+            "label": "Link"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}
