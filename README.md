@@ -8,4 +8,6 @@ Taken from this Shopify forum thread - https://ecommerce.shopify.com/c/ecommerce
 
 Combined with this Shopify tutorial - https://help.shopify.com/themes/customization/products/features/add-tabs-to-product-descriptions
 
+### Easy Fancy Slick Carousel Section (with text overlay, buttons, lots of options - just drop it in) - https://github.com/patrickbolle/shopify-snippets/blob/master/fancy-slick-carousel.liquid
+
 ### Pagination Snippet with Page Numbers (and arrows) - https://github.com/patrickbolle/shopify-snippets/blob/master/pagination-with-numbers.liquid
