@@ -1,0 +1,35 @@
+{%- capture color_name -%}{{ section.id }}-{{ product.id }}-{% increment color_name %}{%- endcapture -%}
+{%- for option in product.options_with_values -%}
+  {%- assign downcased_option = option.name | downcase -%}
+
+  {%- if downcased_option == 'color' or downcased_option == 'colour' or downcased_option == 'couleur' -%}
+    {%- assign variant_option = 'option' | append: forloop.index -%}
+
+    {%- for value in option.values -%}
+      {%- assign downcased_value = value | downcase -%}
+      {%- capture color_id -%}{{ section.id }}-{{ product.id }}-{% increment color_index %}{%- endcapture -%}
+
+      {%- for variant in product.variants -%}
+        {%- if variant[variant_option] == value -%}
+          {%- assign variant_for_value = variant -%}
+          {%- break -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      <a href="{{ variant_for_value.url }}">
+        <img style="background-color: {{ value | replace: ' ', '' | downcase }};" src="{{ value | handleize | append: '.png' | asset_url }}" width="16" height="16" class="option_circles" />
+      </a>
+    {%- endfor -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<style>
+.option_circles {
+  height: 25px;
+  width: 25px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  border:1px solid #ccc;
+}
+</style>
