@@ -1,0 +1,22 @@
+<!-- Include in the theme.liquid file for general site covering -->
+{% comment %}
+  The below check was taken from some Liquid script I found somewhere on the internet. It checks if the theme customizer is open or the store owner is looking at the site, and disables the redirection if so. Helps for testing / annoyance.
+{% endcomment %}
+{% if content_for_header contains 'adminBarInjector' or content_for_header contains 'previewBarInjector' or content_for_header contains 'designMode' %}
+  {% assign dontShow = true %}
+{% endif %}
+
+{% unless dontShow %}
+  <script>
+    // Geolocation Redirect
+    let uk_list = ['Europe', 'North America', 'South America'];
+    let asia_list = ['Africa', 'Antarctica', 'Asia', 'Oceania'];
+
+    // Getting the country code from the user's IP
+    $.get("//api.ipdata.co?api-key=???????", function (response) {
+      if (asia_list.includes(response.continent_name)) {
+        location.href = "?????????";
+      }
+    }, "jsonp");
+  </script>
+{% endunless %}
